@@ -12,7 +12,7 @@ public class UtilTest {
     @Test
     public void testHexToByteValid(){
         String hexCode1 = "01aE22";
-        String hexCode2 = "1D08A";
+        String hexCode2 = "01D08A";
         byte[] result1 = {1, -82, 34};
         byte[] result2 = {1, -48, -118};
         byte[] obtainedResult1 = Util.hextobyte(hexCode1);
