@@ -36,4 +36,9 @@ public class UtilTest {
     public void testByteToHex(){
         assertEquals("01ae22", Util.bytetohex(new byte[] {1, -82, 34}));
     }
+    
+    @Test
+    public void testByteToHexEmpty(){
+        assertEquals("", Util.bytetohex(new byte[] {}));
+    }
 }
