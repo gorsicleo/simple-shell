@@ -8,13 +8,13 @@ public class EnvironmentImpl implements Environment {
 	private char multiLineSymbol = '|';
 	private char promptSymbol = '>';
 	private char morelinesSymbol = '\\';
+	private Scanner sc = new Scanner(System.in);
 
 	@Override
 	public String readLine() throws ShellIOException {
-		Scanner sc = new Scanner(System.in);
+		write(promptSymbol+" ");
 		if (sc.hasNextLine()) {
 			String nextLine = sc.nextLine();
-			sc.close();
 			return nextLine;
 		} else {
 			sc.close();
