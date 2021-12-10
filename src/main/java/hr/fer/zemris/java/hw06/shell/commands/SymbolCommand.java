@@ -7,6 +7,13 @@ import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
 public class SymbolCommand implements ShellCommand {
+	
+	private static final String COMMAND_NAME = "symbol";
+	private static final List<String> COMMAND_DESCRIPTION = List.of(
+			"Command for changing symbols", 
+			"symbol [symbol-type] [new-symbol] ", 
+			"\r\r symbol-type - Type of symbol to be changed [PROMPT | MORELINES | MULTILINE]",
+			"\r\r new-symbol - New symbol [# | % | $ | ...]");
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
@@ -16,13 +23,13 @@ public class SymbolCommand implements ShellCommand {
 
 	@Override
 	public String getCommandName() {
-		return "symbol";
+		return COMMAND_NAME;
 	}
 
 	@Override
 	public List<String> getCommandDescription() {
 		// TODO Auto-generated method stub
-		return null;
+		return COMMAND_DESCRIPTION;
 	}
 
 }

@@ -11,6 +11,7 @@ import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
 public class HelpCommand implements ShellCommand {
 	
+	private static final String COMMAND_NAME = "help";
 	private List<Token> tokens;
 	private String commandName;
 	private static final List<String> COMMAND_DESCRIPTION = List.of(
@@ -49,7 +50,7 @@ public class HelpCommand implements ShellCommand {
 
 	@Override
 	public String getCommandName() {
-		return "help";
+		return COMMAND_NAME;
 	}
 
 	@Override
