@@ -16,8 +16,7 @@ public class MkdirCommand implements ShellCommand {
 
 	@Override
 	public String getCommandName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "mkdir";
 	}
 
 	@Override

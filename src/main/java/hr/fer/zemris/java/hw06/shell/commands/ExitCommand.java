@@ -16,8 +16,7 @@ public class ExitCommand implements ShellCommand {
 
 	@Override
 	public String getCommandName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "exit";
 	}
 
 	@Override
