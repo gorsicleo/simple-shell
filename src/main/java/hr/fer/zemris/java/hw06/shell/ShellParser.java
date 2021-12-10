@@ -8,7 +8,7 @@ public class ShellParser {
 		COMMAND, KEYWORD, ARGUMENT, EOF
 	};
 
-	private enum ParsingMode {
+	public enum ParsingMode {
 		USER_INPUT_PARSING, ARGUMENTS_PARSING
 	};
 
@@ -49,11 +49,13 @@ public class ShellParser {
 		private char[] data;
 		private Token currentToken;
 		private int currentIndex;
+		private ParsingMode parsingMode;
 
-		public ShellLexer(String text) {
+		public ShellLexer(String text,ParsingMode parsingMode) {
 			currentIndex = 0;
 			currentToken = null;
 			data = text.toCharArray();
+			this.parsingMode = parsingMode;
 		}
 
 		public Token getToken() {
@@ -68,34 +70,44 @@ public class ShellParser {
 		/** Calls methods to identify token. */
 		private void generateNextToken() {
 			removeBlanks();
-			if (isEndReached() || isCommand() || isArgument())
-				return;
+			if (parsingMode == ParsingMode.USER_INPUT_PARSING) {
+				if (isEndReached() || isCommand() || isArguments())
+					return;
+			}
+			
+			if (parsingMode == ParsingMode.ARGUMENTS_PARSING) {
+				if (isEndReached() || isArgument())
+					return;
+			}
+			
+			throw new ShellLexerException("Illegal lexer state");
+			
 		}
 
-//		private boolean isArgument() {
-//			
-//			String extractedWord = new String("");
-//
-//			while (currentIndex < data.length && data[currentIndex] != ' ') {
-//				if (data[currentIndex]=='"') {
-//					do {
-//						extractedWord += data[currentIndex];
-//						currentIndex++;
-//					} while (data[currentIndex] != '"');
-//					extractedWord += data[currentIndex];
-//					currentIndex++;
-//					break;
-//				} else {
-//					extractedWord += data[currentIndex];
-//					currentIndex++;	
-//				}
-//				
-//			}
-//			currentToken = new Token(TokenType.ARGUMENT, extractedWord);
-//			return true;
-//
-//		}
 		private boolean isArgument() {
+			
+			String extractedWord = new String("");
+
+			while (currentIndex < data.length && data[currentIndex] != ' ') {
+				if (data[currentIndex]=='"') {
+					do {
+						extractedWord += data[currentIndex];
+						currentIndex++;
+					} while (data[currentIndex] != '"');
+					extractedWord += data[currentIndex];
+					currentIndex++;
+					break;
+				} else {
+					extractedWord += data[currentIndex];
+					currentIndex++;	
+				}
+				
+			}
+			currentToken = new Token(TokenType.ARGUMENT, extractedWord);
+			return true;
+
+		}
+		private boolean isArguments() {
 			String extractedArguments = "";
 			while (currentIndex < data.length) {
 				extractedArguments += data[currentIndex];
@@ -115,6 +127,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 3)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 3);
 
@@ -123,6 +138,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 4)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 4);
 			if (extractedCommand.equalsIgnoreCase("copy") || extractedCommand.equalsIgnoreCase("tree")
@@ -131,6 +149,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 5)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 5);
 			if (extractedCommand.equalsIgnoreCase("mkdir")) {
@@ -138,6 +159,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 6)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 6);
 			if (extractedCommand.equalsIgnoreCase("symbol")) {
@@ -145,6 +169,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 7)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 7);
 			if (extractedCommand.equalsIgnoreCase("hexdump")) {
@@ -152,6 +179,9 @@ public class ShellParser {
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
 			}
+			
+			if (data.length - currentIndex < 8)
+				return false;
 
 			extractedCommand = new String(data, currentIndex, 8);
 			if (extractedCommand.equalsIgnoreCase("charsets")) {
@@ -200,8 +230,8 @@ public class ShellParser {
 	/**Parses query string.
 	 * @param input string for parsing query
 	 */
-	public ShellParser(String input,) {
-		lexer = new ShellLexer(input);
+	public ShellParser(String input, ParsingMode parsingMode) {
+		lexer = new ShellLexer(input, parsingMode);
 		getAllTokens();
 	}
 
