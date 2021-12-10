@@ -95,6 +95,7 @@ public class ShellParser {
 
 		// charsets, cat, ls,tree, copy, mkdir, hexdump
 		private boolean isCommand() {
+			if (data.length-currentIndex<2) return false;
 			String extractedCommand = new String(data, currentIndex, 2);
 			if (extractedCommand.equalsIgnoreCase("ls")) {
 				currentIndex += extractedCommand.length();
@@ -112,7 +113,7 @@ public class ShellParser {
 
 			extractedCommand = new String(data, currentIndex, 4);
 			if (extractedCommand.equalsIgnoreCase("copy") || extractedCommand.equalsIgnoreCase("tree")
-					|| extractedCommand.equalsIgnoreCase("exit")) {
+					|| extractedCommand.equalsIgnoreCase("exit") || extractedCommand.equalsIgnoreCase("help")) {
 				currentIndex += extractedCommand.length();
 				currentToken = new Token(TokenType.COMMAND, extractedCommand);
 				return true;
@@ -178,9 +179,6 @@ public class ShellParser {
 	}
 
 	
-	private static final String INVALID_IDENTIFIER = "Identifier %s is not allowed.";
-	private static final String INDIRECT_QUERY_ERROR = "Query must be direct to perform this request.";
-	private static final String INVALID_OPERATOR = "Operator %s is not allowed.";
 	
 	/**Lexer used for generating lexer tokens*/
 	private ShellLexer lexer;
