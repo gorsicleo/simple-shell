@@ -7,6 +7,7 @@ import hr.fer.zemris.java.hw06.shell.ShellCommand;
 import hr.fer.zemris.java.hw06.shell.ShellParser;
 import hr.fer.zemris.java.hw06.shell.ShellParser.ParsingMode;
 import hr.fer.zemris.java.hw06.shell.ShellParser.Token;
+import hr.fer.zemris.java.hw06.shell.ShellParser.TokenType;
 import hr.fer.zemris.java.hw06.shell.ShellStatus;
 
 public class HelpCommand implements ShellCommand {
@@ -31,7 +32,7 @@ public class HelpCommand implements ShellCommand {
 			return ShellStatus.CONTINUE;
 		}
 		
-		if (tokens.get(0).getValue().isBlank()) {
+		if (tokens.get(0).getType().equals(TokenType.EOF)) {
 			env.writeln("List of supported commands: ");
 			env.commands().entrySet().stream().forEach(e -> env.writeln(e.getKey()));
 		} else {
