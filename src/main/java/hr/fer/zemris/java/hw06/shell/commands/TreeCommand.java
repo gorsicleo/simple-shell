@@ -59,17 +59,17 @@ public class TreeCommand implements ShellCommand {
 	
 	
 	private static StringBuilder renderFolder(File folder, int level, StringBuilder sb, boolean isLast) {
-      indent(sb, level, isLast).append("[DIR] ").append(folder.getName()).append("\n");
+      indent(sb, level, isLast).append("[DIR] "+folder.getName()+"\n");
 
-      File[] objects = folder.listFiles();
+      File[] objectsInDir = folder.listFiles();
 
-      for (int i = 0; i < objects.length; i++) {
-        boolean last = ((i + 1) == objects.length);
+      for (int i = 0; i < objectsInDir.length; i++) {
+        boolean last = ((i + 1) == objectsInDir.length);
 
-        if (objects[i].isDirectory()) {
-          renderFolder(objects[i], level + 1, sb, last);
+        if (objectsInDir[i].isDirectory()) {
+          renderFolder(objectsInDir[i], level + 1, sb, last);
         } else {
-          renderFile(objects[i], level + 1, sb, last);
+          renderFile(objectsInDir[i], level + 1, sb, last);
         }
       }
 
@@ -77,18 +77,14 @@ public class TreeCommand implements ShellCommand {
     }
 
     private static StringBuilder renderFile(File file, int level, StringBuilder sb, boolean isLast) {
-      return indent(sb, level, isLast).append("── ").append(file.getName()).append("\n");
+      return indent(sb, level, isLast).append("── "+file.getName()+"\n");
     }
 
     private static StringBuilder indent(StringBuilder sb, int level, boolean isLast) {
-      for (int i = 1; i < level; i++) {
-        sb.append("|  ");
-      }
+        sb.append("|  ".repeat(level));
 
       if (level > 0) {
-        sb.append(isLast
-          ? "├─"
-          : "├─");
+        sb.append(isLast? "├─": "├─");
       }
 
       return sb;
