@@ -38,7 +38,13 @@ public class TreeCommand implements ShellCommand {
 		String path = tokens.get(0).getValue().startsWith("\"") ? tokens.get(0).getValue().replace("\"", "")
 				: tokens.get(0).getValue();
 		
-		env.write(renderFolder(new File(path), 0, new StringBuilder(), false).toString());
+		File directory = new File(path);
+		
+		if (directory.isDirectory()) {
+			env.write(renderFolder(new File(path), 0, new StringBuilder(), false).toString());
+		} else {
+			env.writeln("Given path is not direcotry!");
+		}
 
 		
 		return ShellStatus.CONTINUE;
