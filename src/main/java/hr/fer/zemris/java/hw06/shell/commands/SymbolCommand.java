@@ -26,51 +26,65 @@ public class SymbolCommand implements ShellCommand {
 		
 		if (tokens.size() == 1) {
 			
-			switch (tokens.get(0).getValue()) {
-			case "PROMPT":
-				env.writeln("Symbol for PROMPT is '"+env.getPromptSymbol()+"'");
-				break;
-			
-			case "MORELINES":
-				env.writeln("Symbol for MORELINES is '"+env.getMorelinesSymbol()+"'");
-				break;
-				
-			case "MULTILINE":
-				env.writeln("Symbol for MULTILINE is '"+env.getMultilineSymbol()+"'");
-				break;
-
-			default:
-				env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
-				break;
-			}
+			handleSymbolPrint(env);
 		}
 		
-		if (tokens.size() == 2) {
+		else if (tokens.size() == 2) {
 			String newSymbol = tokens.get(1).getValue();
-			
-			switch (tokens.get(0).getValue()) {
-			case "PROMPT":
-				env.writeln("Symbol PROMPT changed from '"+env.getPromptSymbol()+"' to '"+newSymbol+"'");
-				env.setPromptSymbol(newSymbol.charAt(0));
-				break;
-			
-			case "MORELINES":
-				env.writeln("Symbol MORELINES changed from '"+env.getMorelinesSymbol()+"' to '"+newSymbol+"'");
-				env.setMorelinesSymbol(newSymbol.charAt(0));
-				break;
-				
-			case "MULTILINE":
-				env.writeln("Symbol MULTILINE changed from '"+env.getMultilineSymbol()+"' to '"+newSymbol+"'");
-				env.setMultilineSymbol(newSymbol.charAt(0));
-				break;
-
-			default:
-				env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
-				break;
+			if (newSymbol.length() != 1) {
+				env.writeln("Argument length not valid: should be character, but was String ("+newSymbol.length()+")");
+				return ShellStatus.CONTINUE;
 			}
+			
+			handleSymbolChange(env, newSymbol);
+		} else {
+			env.writeln("Invalid number of arguments for method symbol should be max 2, but was: "+tokens.size());
 		}
 		return ShellStatus.CONTINUE;
 		
+	}
+
+	private void handleSymbolChange(Environment env, String newSymbol) {
+		switch (tokens.get(0).getValue()) {
+		case "PROMPT":
+			env.writeln("Symbol PROMPT changed from '"+env.getPromptSymbol()+"' to '"+newSymbol+"'");
+			env.setPromptSymbol(newSymbol.charAt(0));
+			break;
+		
+		case "MORELINES":
+			env.writeln("Symbol MORELINES changed from '"+env.getMorelinesSymbol()+"' to '"+newSymbol+"'");
+			env.setMorelinesSymbol(newSymbol.charAt(0));
+			break;
+			
+		case "MULTILINE":
+			env.writeln("Symbol MULTILINE changed from '"+env.getMultilineSymbol()+"' to '"+newSymbol+"'");
+			env.setMultilineSymbol(newSymbol.charAt(0));
+			break;
+
+		default:
+			env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
+			break;
+		}
+	}
+
+	private void handleSymbolPrint(Environment env) {
+		switch (tokens.get(0).getValue()) {
+		case "PROMPT":
+			env.writeln("Symbol for PROMPT is '"+env.getPromptSymbol()+"'");
+			break;
+		
+		case "MORELINES":
+			env.writeln("Symbol for MORELINES is '"+env.getMorelinesSymbol()+"'");
+			break;
+			
+		case "MULTILINE":
+			env.writeln("Symbol for MULTILINE is '"+env.getMultilineSymbol()+"'");
+			break;
+
+		default:
+			env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
+			break;
+		}
 	}
 
 	@Override

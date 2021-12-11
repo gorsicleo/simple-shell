@@ -14,16 +14,19 @@ public class MyShell {
 		String commandName;
 		ShellCommand command;
 		List<Token> tokens;
-		ShellStatus status;
+		ShellStatus status = ShellStatus.CONTINUE;
 		
+		environment.writeln("Welcome to MyShell v 1.0\r\n");
 		
-		
-		while (true) {
+		while (status==ShellStatus.CONTINUE) {
+			
 			userInput = environment.readLine();
 			tokens = (new ShellParser(userInput,ParsingMode.USER_INPUT_PARSING)).getTokens();
 			command = environment.commands().get(tokens.get(0).getValue());
 			arguments = tokens.size()==2 ? tokens.get(1).getValue(): " ";
 			status = command.executeCommand(environment,arguments );
 		}
+		
+		environment.writeln("Shell terminated.\r\n");
 	}
 }
