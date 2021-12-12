@@ -7,6 +7,12 @@ import java.util.TreeMap;
 
 import hr.fer.zemris.java.hw06.shell.commands.*;
 
+/**Concrete implementation of my environment. 
+ * It supports commands: cat, copy, charsets, exit, help, hexdump, ls, mkdir, symbol, tree 
+ * For reading and writing standard IO is used. (console output)
+ * @author gorsicleo
+ *
+ */
 public class EnvironmentImpl implements Environment {
 	
 	private char multiLineSymbol = '|';
@@ -14,8 +20,10 @@ public class EnvironmentImpl implements Environment {
 	private char morelinesSymbol = '\\';
 	private Scanner sc = new Scanner(System.in);
 	
+	/**All commands supported by this environment*/
 	private SortedMap<String, ShellCommand> commands = new TreeMap<String, ShellCommand>();
 	
+	/**Creates new environment object with supported methods*/
 	public EnvironmentImpl() {
 		commands.put("cat", new CatCommand());
 		commands.put("charsets", new CharsetsCommand());
@@ -30,6 +38,12 @@ public class EnvironmentImpl implements Environment {
 		
 	}
 
+
+	/**Reads one line from user. It is possible for user to input one line using more than one 
+	 * lines using MORELINES symbol, but return of this method will allways be one line since this method concatenates 
+	 * multiple lines into one.
+	 * @return one line from user input
+	 */
 	@Override
 	public String readLine() throws ShellIOException {
 		write(promptSymbol+" ");

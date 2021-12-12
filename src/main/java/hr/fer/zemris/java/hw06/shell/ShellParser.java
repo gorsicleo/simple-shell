@@ -3,19 +3,40 @@ package hr.fer.zemris.java.hw06.shell;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class provides functuionality for both parsing user commands and command
+ * arguments. To provide that functionality there are two distinct states. Upon
+ * creation string is being parsed.
+ * 
+ * @author gorsicleo
+ *
+ */
 public class ShellParser {
-	public enum TokenType {
+	
+	/**This enum contains possible token types that lexer can generate
+	 * @author gorsicleo*/
+	public static enum TokenType {
 		COMMAND, KEYWORD, ARGUMENT, EOF
 	};
 
-	public enum ParsingMode {
-		USER_INPUT_PARSING, ARGUMENTS_PARSING
+	/**This enum contains two modes for parsing:
+	 * @author gorsicleo*/
+	public static enum ParsingMode {
+		
+		/**State for parsing input when user is entering commands in shell.*/
+		USER_INPUT_PARSING,
+		/**State for parsing command arguments <b>FROM already parsed user input</b>.*/
+		ARGUMENTS_PARSING
 	};
 
+	/**Class that models token that lexer is generating. 
+	 * @author gorsicleo
+	 */
 	public static class Token {
 		private String value;
 		private TokenType tokenType;
 
+		/**Creates new token.*/
 		public Token(TokenType tokentype, String value) {
 			this.value = value;
 			this.tokenType = tokentype;
@@ -37,6 +58,7 @@ public class ShellParser {
 			this.tokenType = tokenType;
 		}
 
+		/**Converts token to string using template: [tokenType | tokenValue].*/
 		@Override
 		public String toString() {
 			return "[ " + tokenType.toString() + " | " + value + " ]";
@@ -44,6 +66,11 @@ public class ShellParser {
 
 	}
 
+	/**Class that performs lexical analysis of given input.
+	 * Lexical units are tokens that hold type and value.
+	 * Input is being tokenized upon creation of object.
+	 * @author gorsicleo
+	 */
 	private static class ShellLexer {
 
 		private char[] data;
@@ -51,17 +78,20 @@ public class ShellParser {
 		private int currentIndex;
 		private ParsingMode parsingMode;
 
-		public ShellLexer(String text,ParsingMode parsingMode) {
+		/**Creates new Lexer object and starts lexical analysis.*/
+		public ShellLexer(String text, ParsingMode parsingMode) {
 			currentIndex = 0;
 			currentToken = null;
 			data = text.toCharArray();
 			this.parsingMode = parsingMode;
 		}
 
+		/**Get last created token.*/
 		public Token getToken() {
 			return currentToken;
 		}
 
+		/**Generate and return next token.*/
 		public Token nextToken() {
 			generateNextToken();
 			return currentToken;
@@ -74,22 +104,29 @@ public class ShellParser {
 				if (isEndReached() || isCommand() || isArguments())
 					return;
 			}
-			
+
 			if (parsingMode == ParsingMode.ARGUMENTS_PARSING) {
 				if (isEndReached() || isArgument())
 					return;
 			}
-			
+
 			throw new ShellLexerException("Illegal lexer state");
-			
+
 		}
 
+		/**
+		 * Method checks if following characters can be grouped as one argument. Method is
+		 * used when lexer is working in arguments parsing.
+		 * 
+		 * @return true if following characters are possible to group as one word
+		 *         (characters separated by spaces)
+		 */
 		private boolean isArgument() {
-			
+
 			String extractedWord = new String("");
 
 			while (currentIndex < data.length && data[currentIndex] != ' ') {
-				if (data[currentIndex]=='"') {
+				if (data[currentIndex] == '"') {
 					do {
 						extractedWord += data[currentIndex];
 						currentIndex++;
@@ -99,14 +136,22 @@ public class ShellParser {
 					break;
 				} else {
 					extractedWord += data[currentIndex];
-					currentIndex++;	
+					currentIndex++;
 				}
-				
+
 			}
 			currentToken = new Token(TokenType.ARGUMENT, extractedWord);
 			return true;
 
 		}
+
+		/**
+		 * Method checks if following characters can be grouped as one argument. Method is
+		 * used when lexer is working in user input parsing.
+		 * 
+		 * @return true if following characters are possible to group as one word
+		 *         (characters separated by spaces)
+		 */
 		private boolean isArguments() {
 			String extractedArguments = "";
 			while (currentIndex < data.length) {
@@ -117,82 +162,85 @@ public class ShellParser {
 			return true;
 		}
 
-		// charsets, cat, ls,tree, copy, mkdir, hexdump
+		/**Method checks if following characters can be grouped as command.
+		 * Currently supported commands::
+		 * charsets, cat, ls,tree, copy, mkdir, hexdump
+		 */
 		private boolean isCommand() {
-			if (data.length - currentIndex < 2)
-				return false;
+			
+			if (data.length - currentIndex < 2) return false;
+			
 			String extractedCommand = new String(data, currentIndex, 2);
 			if (extractedCommand.equalsIgnoreCase("ls")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 3)
-				return false;
+
+			if (data.length - currentIndex < 3) return false;
 
 			extractedCommand = new String(data, currentIndex, 3);
-
 			if (extractedCommand.equalsIgnoreCase("cat")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 4)
-				return false;
+
+			if (data.length - currentIndex < 4) return false;
 
 			extractedCommand = new String(data, currentIndex, 4);
 			if (extractedCommand.equalsIgnoreCase("copy") || extractedCommand.equalsIgnoreCase("tree")
 					|| extractedCommand.equalsIgnoreCase("exit") || extractedCommand.equalsIgnoreCase("help")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 5)
-				return false;
+
+			if (data.length - currentIndex < 5) return false;
 
 			extractedCommand = new String(data, currentIndex, 5);
 			if (extractedCommand.equalsIgnoreCase("mkdir")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 6)
-				return false;
+
+			if (data.length - currentIndex < 6) return false;
 
 			extractedCommand = new String(data, currentIndex, 6);
 			if (extractedCommand.equalsIgnoreCase("symbol")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 7)
-				return false;
+
+			if (data.length - currentIndex < 7) return false;
 
 			extractedCommand = new String(data, currentIndex, 7);
 			if (extractedCommand.equalsIgnoreCase("hexdump")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
-			
-			if (data.length - currentIndex < 8)
-				return false;
+
+			if (data.length - currentIndex < 8) return false;
 
 			extractedCommand = new String(data, currentIndex, 8);
 			if (extractedCommand.equalsIgnoreCase("charsets")) {
-				currentIndex += extractedCommand.length();
-				currentToken = new Token(TokenType.COMMAND, extractedCommand);
+				handleExtractedCommand(extractedCommand);
 				return true;
 			}
 
 			return false;
 		}
 
+		/**Method creates new COMMAND token*/
+		private void handleExtractedCommand(String extractedCommand) {
+			currentIndex += extractedCommand.length();
+			currentToken = new Token(TokenType.COMMAND, extractedCommand);
+		}
+
+		/**
+		 * Method checks if current index count reached length of string that is used
+		 * for lexical analysis. If true EOF token is being created.
+		 * 
+		 * @return true if current index count is equal or greater than length of
+		 *         current string that is being analysed.
+		 */
 		private boolean isEndReached() {
 			if (currentIndex >= data.length) {
 				currentToken = new Token(TokenType.EOF, null);
@@ -227,7 +275,9 @@ public class ShellParser {
 	/** List of all tokens generated by lexer */
 	private List<Token> tokens = new ArrayList<>();
 
-	/**Parses query string.
+	/**
+	 * Parses query string.
+	 * 
 	 * @param input string for parsing query
 	 */
 	public ShellParser(String input, ParsingMode parsingMode) {
