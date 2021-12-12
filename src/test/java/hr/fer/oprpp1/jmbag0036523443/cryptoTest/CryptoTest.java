@@ -15,8 +15,7 @@ public class CryptoTest {
 	@Test
 	public void digestTest() {
 		Path path = Paths.get("./src/main/resources/hw05test.bin");
-		String hash = "2e7b3a91235ad72cb7e7f6a721f077faacfeafdea8f3785627a5245bea112598";
-		assertEquals(true,Crypto.checksha(hash, path));
+		assertEquals("2e7b3a91235ad72cb7e7f6a721f077faacfeafdea8f3785627a5245bea112598",Crypto.checksha(path));
 	}
 	
 	@Test

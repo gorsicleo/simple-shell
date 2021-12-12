@@ -3,10 +3,20 @@ package hr.fer.oprpp1.jmbag0036523443.util;
 import java.math.BigInteger;
 
 
+/**Class provides functions for seamless conversion between hex strings and byte array.
+ * @author gorsicleo
+ *
+ */
 public class Util{
 	
 	private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 	
+	
+    /**Method converts given hex String to byte[].
+     * @param hexString to be converted to byte[]
+     * @throws IllegalArgumentException if String is not hexadecimal
+     * @return byte[] of given String
+     */
     public static byte[] hextobyte(String hexString) {
     	if (hexString.length() % 2 == 1) {
             throw new IllegalArgumentException(
@@ -20,12 +30,23 @@ public class Util{
         return bytes;
     }
 
+    
+    /**Method converts given hex String to byte.
+     * @param hexString to be converted to byte
+     * @throws IllegalArgumentException if String is not hexadecimal
+     * @return byte of given String
+     */
     private static byte hexToByte(String hexString) {
         int firstDigit = toDigit(hexString.charAt(0));
         int secondDigit = toDigit(hexString.charAt(1));
         return (byte) ((firstDigit << 4) + secondDigit);
     }
 
+    /**Method converts given hex char to int.
+     * @param hexChar to be converted to int
+     * @throws IllegalArgumentException if char is not hexadecimal
+     * @return int value of given hex char
+     */
     private static int toDigit(char hexChar) {
         int digit = Character.digit(hexChar, 16);
         if(digit == -1) {
@@ -35,6 +56,10 @@ public class Util{
         return digit;
     }
 
+    /**Method converts given byte[] to hex String
+     * @param byte[] that will be converted to byte[]
+     * @return String representing hexadecimal value of byte[]
+     */
 	public static String bytetohex(byte[] bytearray){
     	
     	char[] hexChars = new char[bytearray.length * 2];
