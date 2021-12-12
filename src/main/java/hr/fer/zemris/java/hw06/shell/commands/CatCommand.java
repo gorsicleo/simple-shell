@@ -38,6 +38,8 @@ public class CatCommand implements ShellCommand {
 		
 		try {
 			env.write(tokens.size() == 2? handleCustomCharset(tokens.get(1).getValue()): handleDefaultCharset());
+		} catch (IllegalArgumentException e) {
+			env.writeln("Please check that given path is file and not directory!");
 		} catch (ShellIOException e) {
 			env.writeln("Fatal error.");
 			return ShellStatus.TERMINATE;
@@ -69,6 +71,11 @@ public class CatCommand implements ShellCommand {
 		String text = "";
 		String path = tokens.get(0).getValue().startsWith("\"") ? tokens.get(0).getValue().replace("\"", "")
 				: tokens.get(0).getValue();
+		
+		if (new File(path).isDirectory()) {
+			throw new IllegalArgumentException();
+		}
+		
 		BufferedReader br = new BufferedReader(
 		           new InputStreamReader(new FileInputStream(path), charset));
 		String line;
