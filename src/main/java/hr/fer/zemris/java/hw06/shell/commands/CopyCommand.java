@@ -43,14 +43,21 @@ public class CopyCommand implements ShellCommand {
 				tokens.get(1).getValue().startsWith("\"") ? tokens.get(1).getValue().replace("\"", "")
 						: tokens.get(1).getValue());
 
-		destination = destination.isDirectory() ? new File(destination.getPath() +'\\'+ source.getName()) : destination;
+		destination = destination.isDirectory() ? new File(destination.getPath() + '\\' + source.getName())
+				: destination;
 
 		if (destination.exists()) {
 			env.writeln("File already exists. Overwrite? [y/n]");
-			if (env.readLine().equalsIgnoreCase("n")) {
+			String isOverwrite = env.readLine();
+			while (!isOverwrite.equalsIgnoreCase("y") && !isOverwrite.equalsIgnoreCase("n")) {
+				env.writeln("File already exists. Overwrite? [y/n]");
+				isOverwrite = env.readLine();
+			}
+			if (isOverwrite.equalsIgnoreCase("n")) {
 				env.writeln("Operation cancelled.");
 				return ShellStatus.CONTINUE;
 			}
+
 		}
 
 		try (InputStream in = new BufferedInputStream(new FileInputStream(source));
@@ -65,8 +72,8 @@ public class CopyCommand implements ShellCommand {
 			env.writeln("Copying done.");
 		} catch (IOException e) {
 			env.writeln("Error occured while copying file.");
-			
-		} 
+
+		}
 
 		return ShellStatus.CONTINUE;
 	}
