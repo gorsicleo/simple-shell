@@ -15,6 +15,7 @@ import hr.fer.zemris.java.hw06.shell.ShellStatus;
  */
 public class CommandUtil {
 
+	private static final String NULL_ERROR_MESSAGE = "Cannot parse empty argument";
 	private static final String UNKNOWN_CHARACTER = ".";
 
 	/**Method removes quotation marks from beginning and end of string
@@ -22,6 +23,7 @@ public class CommandUtil {
 	 * @return src without ""
 	 */
 	public static String removeQuotation(String src) {
+		if (src == null) return NULL_ERROR_MESSAGE;
 		return src.startsWith("\"") ? src.replace("\"", "") : src;
 	}
 

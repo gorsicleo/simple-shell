@@ -18,6 +18,7 @@ import hr.fer.zemris.java.hw06.shell.ShellStatus;
  */
 public class HelpCommand implements ShellCommand {
 
+	private static final String COMMAND_NAME_NOT_FOUND_ERROR = "Command name not found";
 	private static final String INVALID_NUMBER_OF_ARGS = "Invalid number of arguments for command: ";
 	private static final String LIST_OF_COMMANDS_MESSAGE = "List of supported commands: ";
 	private static final String COMMAND_NAME = "help";
@@ -45,6 +46,8 @@ public class HelpCommand implements ShellCommand {
 			if (env.commands().containsKey(commandName)) {
 				env.writeln("Command: " + commandName);
 				env.commands().get(commandName).getCommandDescription().stream().forEach(env::writeln);
+			} else {
+				CommandUtil.terminateNotFatal(COMMAND_NAME_NOT_FOUND_ERROR, env);
 			}
 		}
 		return ShellStatus.CONTINUE;
