@@ -9,60 +9,68 @@ import hr.fer.zemris.java.hw06.shell.ShellStatus;
 import hr.fer.zemris.java.hw06.shell.ShellParser.ParsingMode;
 import hr.fer.zemris.java.hw06.shell.ShellParser.Token;
 
+/**
+ * Models symbol command. Symbol command is used for displaying and changing
+ * shell symbols.
+ * 
+ * @author gorsicleo
+ */
 public class SymbolCommand implements ShellCommand {
-	
+
+	private static final String CHANGE_SYMBOL = "Symbol %s changed from '%c' to '%s'";
+	private static final String PRINT_SYMBOL = "Symbol for %s is ' %s'";
+	private static final String INVALID_SYMBOL_MESSAGE = "Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]";
+	private static final String INVALID_NUMBER_OF_ARGS = "Invalid number of arguments for method symbol should be max 2, but was: ";
+	private static final String INVALID_ARG_SIZE = "Argument length not valid: should be character, but was String (%d)";
 	private static final String COMMAND_NAME = "symbol";
-	private static final List<String> COMMAND_DESCRIPTION = List.of(
-			"Command for changing symbols", 
-			"symbol [symbol-type] [new-symbol] ", 
+	private static final List<String> COMMAND_DESCRIPTION = List.of("Command for changing symbols",
+			"symbol [symbol-type] [new-symbol] ",
 			"\r\r symbol-type - Type of symbol to be changed [PROMPT | MORELINES | MULTILINE]",
 			"\r\r new-symbol - New symbol [# | % | $ | ...]");
-	
+
 	private List<Token> tokens;
 
 	@Override
 	public ShellStatus executeCommand(Environment env, String arguments) {
 		tokens = new ShellParser(arguments, ParsingMode.ARGUMENTS_PARSING).getTokens();
-		
+
 		if (tokens.size() == 1) {
-			
 			handleSymbolPrint(env);
 		}
-		
+
 		else if (tokens.size() == 2) {
 			String newSymbol = tokens.get(1).getValue();
 			if (newSymbol.length() != 1) {
-				env.writeln("Argument length not valid: should be character, but was String ("+newSymbol.length()+")");
-				return ShellStatus.CONTINUE;
+				return CommandUtil.terminateNotFatal(String.format(INVALID_ARG_SIZE, newSymbol.length()), env);
 			}
-			
+
 			handleSymbolChange(env, newSymbol);
 		} else {
-			env.writeln("Invalid number of arguments for method symbol should be max 2, but was: "+tokens.size());
+			env.writeln(INVALID_NUMBER_OF_ARGS + tokens.size());
 		}
 		return ShellStatus.CONTINUE;
-		
+
 	}
 
 	private void handleSymbolChange(Environment env, String newSymbol) {
 		switch (tokens.get(0).getValue()) {
 		case "PROMPT":
-			env.writeln("Symbol PROMPT changed from '"+env.getPromptSymbol()+"' to '"+newSymbol+"'");
+			env.writeln(String.format(CHANGE_SYMBOL, "PROMPT", env.getPromptSymbol(), newSymbol));
 			env.setPromptSymbol(newSymbol.charAt(0));
 			break;
-		
+
 		case "MORELINES":
-			env.writeln("Symbol MORELINES changed from '"+env.getMorelinesSymbol()+"' to '"+newSymbol+"'");
+			env.writeln(String.format(CHANGE_SYMBOL, "MORELINES", env.getMorelinesSymbol(), newSymbol));
 			env.setMorelinesSymbol(newSymbol.charAt(0));
 			break;
-			
+
 		case "MULTILINE":
-			env.writeln("Symbol MULTILINE changed from '"+env.getMultilineSymbol()+"' to '"+newSymbol+"'");
+			env.writeln(String.format(CHANGE_SYMBOL, "MULTILINE", env.getMultilineSymbol(), newSymbol));
 			env.setMultilineSymbol(newSymbol.charAt(0));
 			break;
 
 		default:
-			env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
+			env.writeln(INVALID_SYMBOL_MESSAGE);
 			break;
 		}
 	}
@@ -70,19 +78,20 @@ public class SymbolCommand implements ShellCommand {
 	private void handleSymbolPrint(Environment env) {
 		switch (tokens.get(0).getValue()) {
 		case "PROMPT":
-			env.writeln("Symbol for PROMPT is '"+env.getPromptSymbol()+"'");
+			env.writeln(String.format(PRINT_SYMBOL, "PROMPT", env.getPromptSymbol()));
+
 			break;
-		
+
 		case "MORELINES":
-			env.writeln("Symbol for MORELINES is '"+env.getMorelinesSymbol()+"'");
+			env.writeln(String.format(PRINT_SYMBOL, "MORELINES", env.getMorelinesSymbol()));
 			break;
-			
+
 		case "MULTILINE":
-			env.writeln("Symbol for MULTILINE is '"+env.getMultilineSymbol()+"'");
+			env.writeln(String.format(PRINT_SYMBOL, "MULTILINE", env.getMultilineSymbol()));
 			break;
 
 		default:
-			env.writeln("Please choose one of the following symbol names: [PROMPT | MORELINES | MULTILINE]");
+			env.writeln(INVALID_SYMBOL_MESSAGE);
 			break;
 		}
 	}
